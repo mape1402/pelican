@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <PackageId>Pelican.Mediator</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Mario Perez</Authors>
     <Company>Mario Perez</Company>
     <Description>Simple. Fast. Reliable message delivery for .NET.</Description>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/mape1402/pelican</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/mape1402/pelican</PackageProjectUrl>
-    <PackageIcon>https://github.com/mape1402/pelican/main/assets/image.png</PackageIcon>
+    <PackageIcon>../../assets/image.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
