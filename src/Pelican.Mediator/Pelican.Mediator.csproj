@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/mape1402/pelican</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/mape1402/pelican</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/mape1402/pelican/main/assets/image.png</PackageIconUrl>
+    <PackageIcon>https://github.com/mape1402/pelican/main/assets/image.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
