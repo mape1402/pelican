@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <PackageId>Pelican.Mediator</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Mario Perez</Authors>
     <Company>Mario Perez</Company>
     <Description>Simple. Fast. Reliable message delivery for .NET.</Description>
