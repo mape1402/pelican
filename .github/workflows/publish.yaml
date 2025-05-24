@@ -2,6 +2,12 @@ name: Build
 
 on:
   pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/publish.yml'
+      - 'Pelican.sln'
+      - 'Directory.Build.props'
   release:
     types: [published]
 
