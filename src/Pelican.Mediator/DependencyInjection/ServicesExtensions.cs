@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddPelican(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddScoped<IMediator, Mediator>();
-            services.AddScoped<IPipelineManagement, PipelineManagement>();
+            services.AddTransient<IPipelineManagement, PipelineManagement>();
             services.AddScoped<IHandlerFactory, HandlerFactory>();
 
             services.RegisterHandlers(assemblies);
@@ -37,12 +37,23 @@ namespace Microsoft.Extensions.DependencyInjection
                     })
                     .Where(x => x.ImplementedInterfaceType != null));
 
+                var registeredRequestTypes = new HashSet<Type>();
+
                 foreach (var handlerType in handlerTypes)
-                    services.AddScoped(handlerType.ImplementedInterfaceType, handlerType.ImplementationType);
+                {
+                    var requestType = handlerType.ImplementedInterfaceType.GetGenericArguments().First();
+
+                    if (registeredRequestTypes.Contains(requestType))
+                        throw new InvalidOperationException($"Request type '{requestType.Name}' has been registered more than once.");
+
+                    services.AddTransient(handlerType.ImplementedInterfaceType, handlerType.ImplementationType);
+                    registeredRequestTypes.Add(requestType);
+                }
             };
 
             registration(typeof(IRequestHandler<>));
             registration(typeof(IRequestHandler<,>));
+            registration(typeof(INotificationHandler<>));
         }
     }
 }

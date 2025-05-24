@@ -1,0 +1,37 @@
+name: Draft Release
+
+on:
+  push:
+    tags:
+      - 'v*'  
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📄 Read release notes from CHANGELOG.md
+        id: changelog
+        run: |
+          # Extract information from current tag
+          TAG=${GITHUB_REF_NAME}
+          echo "🔖 Tag: $TAG"
+
+          CONTENT=$(awk "/^## $TAG/{flag=1;next}/^## /{flag=0}flag" CHANGELOG.md | sed 's/^/    /')
+          echo "$CONTENT"
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 📝 Create Draft Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.release_notes }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

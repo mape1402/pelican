@@ -62,8 +62,36 @@
             Assert.Equal(expected, result);
         }
 
+        [Fact]
+        public async Task Publish_ShouldInvokeAllNotificationHandlers()
+        {
+            // Arrange
+            var notification = new DummyNotification();
+
+            var handler1 = Substitute.For<INotificationHandler<DummyNotification>>();
+            var handler2 = Substitute.For<INotificationHandler<DummyNotification>>();
+
+            var handlerFactory = Substitute.For<IHandlerFactory>();
+            handlerFactory.CreateNotificationHandlers<DummyNotification>()
+                          .Returns(new[] { handler1, handler2 });
+
+            var pipeline = Substitute.For<IPipelineManagement>(); // not used for Publish
+
+            var mediator = new Mediator(handlerFactory, pipeline);
+
+            // Act
+            await mediator.Publish(notification);
+
+            // Assert
+            await handler1.Received(1).Handle(notification, Arg.Any<CancellationToken>());
+            await handler2.Received(1).Handle(notification, Arg.Any<CancellationToken>());
+        }
+
         // Dummy types
         public class TestRequest : IRequest { }
+
         public class TestRequestWithResponse : IRequest<string> { }
+
+        public class DummyNotification : INotification { }
     }
 }

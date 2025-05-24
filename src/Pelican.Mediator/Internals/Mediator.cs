@@ -77,6 +77,12 @@
             return (Task<TResponse>)invoker(this, request!, cancellationToken);
         }
 
+        public async Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
+        {
+            var handlers = _handlerFactory.CreateNotificationHandlers<TNotification>();
+            await Parallel.ForEachAsync(handlers, cancellationToken, async (handler, ct) => await handler.Handle(notification, ct));
+        }
+
         private Task InternalSend<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
         {
             var handler = _handlerFactory.Create<TRequest>();
