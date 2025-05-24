@@ -6,34 +6,54 @@ on:
     types: [published]
 
 jobs:
-  build-and-test:
+  detect-sdks:
     runs-on: ubuntu-latest
-
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
 
-      - name: 🔍 Detect .NET SDK versions from Directory.Build.props
-        id: detect-sdks
+      - name: 🔍 Parse SDK versions from Directory.Build.props
+        id: set-matrix
         run: |
           PROPS="Directory.Build.props"
           echo "📄 Analyzing $PROPS"
           TARGETS=$(grep -oPm1 "(?<=<TargetFrameworks>)[^<]+" "$PROPS" || grep -oPm1 "(?<=<TargetFramework>)[^<]+" "$PROPS")
           echo "Detected TargetFrameworks: $TARGETS"
-          VERSIONS=""
+
+          VERSIONS=()
           for FRAMEWORK in $(echo $TARGETS | tr ';' ' '); do
             VERSION=$(echo $FRAMEWORK | grep -oP '\d+\.\d+')
-            if [ ! -z "$VERSION" ]; then
-              VERSIONS="$VERSIONS $VERSION"
+            if [ ! -z "$VERSION" ] && [[ ! " ${VERSIONS[*]} " =~ " ${VERSION} " ]]; then
+              VERSIONS+=("$VERSION")
             fi
           done
-          echo "sdk_versions=$VERSIONS" >> "$GITHUB_OUTPUT"
 
-      - name: 🧰 Setup .NET SDKs
+          # Build JSON matrix
+          MATRIX_JSON=$(printf '%s\n' "${VERSIONS[@]}" | jq -R . | jq -s '{dotnet: .}')
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+          echo "🧩 Matrix: $MATRIX_JSON"
+
+  install-sdks:
+    needs: detect-sdks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-sdks.outputs.matrix) }}
+    steps:
+      - name: 🧰 Install .NET SDK ${{ matrix.dotnet }}
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ steps.detect-sdks.outputs.sdk_versions }}
+          dotnet-version: ${{ matrix.dotnet }}
           include-prerelease: true
+
+  build-and-test:
+    needs: install-sdks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v3
 
       - name: 📦 Restore
         run: dotnet restore
@@ -47,33 +67,11 @@ jobs:
   publish:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: [install-sdks, build-and-test]
 
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
-
-      - name: 🔍 Detect .NET SDK versions from Directory.Build.props
-        id: detect-sdks
-        run: |
-          PROPS="Directory.Build.props"
-          echo "📄 Analyzing $PROPS"
-          TARGETS=$(grep -oPm1 "(?<=<TargetFrameworks>)[^<]+" "$PROPS" || grep -oPm1 "(?<=<TargetFramework>)[^<]+" "$PROPS")
-          echo "Detected TargetFrameworks: $TARGETS"
-          VERSIONS=""
-          for FRAMEWORK in $(echo $TARGETS | tr ';' ' '); do
-            VERSION=$(echo $FRAMEWORK | grep -oP '\d+\.\d+')
-            if [ ! -z "$VERSION" ]; then
-              VERSIONS="$VERSIONS $VERSION"
-            fi
-          done
-          echo "sdk_versions=$VERSIONS" >> "$GITHUB_OUTPUT"
-
-      - name: 🧰 Setup .NET SDKs
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ steps.detect-sdks.outputs.sdk_versions }}
-          include-prerelease: true
 
       - name: 📌 Show MinVer version
         run: dotnet build --no-restore --configuration Release src/Pelican.Mediator/Pelican.Mediator.csproj | grep "Project version" || true

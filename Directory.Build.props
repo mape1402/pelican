@@ -9,7 +9,21 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
+
+    <Authors>Mario Perez</Authors>
+    <Company>Elysium Coding</Company>
+    <RepositoryUrl>https://github.com/mape1402/pelican</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mape1402/pelican</PackageProjectUrl>
+    <PackageIcon>image.png</PackageIcon>
+    <PackageReleaseNotes>https://github.com/mape1402/pelican/releases</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../assets/image.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
 
   <PropertyGroup>
     <Version>$(MinVerVersion)</Version>
