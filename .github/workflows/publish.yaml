@@ -7,7 +7,6 @@ on:
 
 jobs:
   install-sdks:
-    needs: detect-sdks
     runs-on: ubuntu-latest
     steps:
       - name: 'Install .NET SDK'
