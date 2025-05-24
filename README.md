@@ -68,7 +68,5 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
 ## 🛠️ Upcoming Features
 
-- **Support for Publisher/Subscriber pattern**
-   Enable event-based message distribution with Pub/Sub capabilities.
 - **Support for PreProcessors and PostProcessors**
    Add hooks to run logic before and after handling a request, useful for validation, logging, transformations, etc.
