@@ -2,8 +2,8 @@
 
 **Simple. Fast. Reliable message delivery for .NET.**
 
+[![Build](https://github.com/mape1402/pelican/actions/workflows/publish.yaml/badge.svg)](https://github.com/mape1402/pelican/actions/workflows/publish.yaml)
 [![NuGet](https://img.shields.io/nuget/v/Pelican.Mediator.svg)](https://www.nuget.org/packages/Pelican.Mediator/)
-[![Build](https://img.shields.io/github/actions/workflow/status/mape1402/pelican/build.yml)](https://github.com/mape1402/pelican/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
