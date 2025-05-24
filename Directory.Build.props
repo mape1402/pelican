@@ -11,8 +11,17 @@
     <IncludeSource>true</IncludeSource>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>$(MinVerVersion)</Version>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
+    <MinVerBuildMetadata>build.{DateTime:yyyyMMddHHmmss}</MinVerBuildMetadata>
+    <MinVerIsRelease>false</MinVerIsRelease>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="MinVer" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">

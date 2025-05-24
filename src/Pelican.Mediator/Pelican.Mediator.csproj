@@ -8,7 +8,6 @@
 
   <PropertyGroup>
     <PackageId>Pelican.Mediator</PackageId>
-    <Version>1.0.5</Version>
     <Authors>Mario Perez</Authors>
     <Company/>
     <Description>Simple. Fast. Reliable message delivery for .NET.</Description>
@@ -23,6 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0"/>
+    <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
