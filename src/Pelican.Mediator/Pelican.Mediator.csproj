@@ -16,7 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/mape1402/pelican</PackageProjectUrl>
     <PackageIcon>image.png</PackageIcon>
-    <PackageReleaseNotes>https://github.com/daviddesmet/paseto-dotnet/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/mape1402/pelican/releases</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
