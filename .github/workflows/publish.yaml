@@ -1,9 +1,9 @@
 name: Build
 
 on:
-  pull_request:         
+  pull_request:
   release:
-    types: [published]   
+    types: [published]
 
 jobs:
   build-and-test:
@@ -13,25 +13,27 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
 
-      - name: 🧰 Setup .NET 6
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '6.0.x'
+      - name: 🔍 Detect .NET SDK versions from Directory.Build.props
+        id: detect-sdks
+        run: |
+          PROPS="Directory.Build.props"
+          echo "📄 Analyzing $PROPS"
+          TARGETS=$(grep -oPm1 "(?<=<TargetFrameworks>)[^<]+" "$PROPS" || grep -oPm1 "(?<=<TargetFramework>)[^<]+" "$PROPS")
+          echo "Detected TargetFrameworks: $TARGETS"
+          VERSIONS=""
+          for FRAMEWORK in $(echo $TARGETS | tr ';' ' '); do
+            VERSION=$(echo $FRAMEWORK | grep -oP '\d+\.\d+')
+            if [ ! -z "$VERSION" ]; then
+              VERSIONS="$VERSIONS $VERSION"
+            fi
+          done
+          echo "sdk_versions=$VERSIONS" >> "$GITHUB_OUTPUT"
 
-      - name: 🧰 Setup .NET 7
+      - name: 🧰 Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.0.x'
-
-      - name: 🧰 Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: 🧰 Setup .NET 9
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
+          dotnet-version: ${{ steps.detect-sdks.outputs.sdk_versions }}
+          include-prerelease: true
 
       - name: 📦 Restore
         run: dotnet restore
@@ -51,31 +53,30 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
 
-      - name: 🧰 Setup .NET 6
+      - name: 🔍 Detect .NET SDK versions from Directory.Build.props
+        id: detect-sdks
+        run: |
+          PROPS="Directory.Build.props"
+          echo "📄 Analyzing $PROPS"
+          TARGETS=$(grep -oPm1 "(?<=<TargetFrameworks>)[^<]+" "$PROPS" || grep -oPm1 "(?<=<TargetFramework>)[^<]+" "$PROPS")
+          echo "Detected TargetFrameworks: $TARGETS"
+          VERSIONS=""
+          for FRAMEWORK in $(echo $TARGETS | tr ';' ' '); do
+            VERSION=$(echo $FRAMEWORK | grep -oP '\d+\.\d+')
+            if [ ! -z "$VERSION" ]; then
+              VERSIONS="$VERSIONS $VERSION"
+            fi
+          done
+          echo "sdk_versions=$VERSIONS" >> "$GITHUB_OUTPUT"
+
+      - name: 🧰 Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: ${{ steps.detect-sdks.outputs.sdk_versions }}
+          include-prerelease: true
 
-      - name: 🧰 Setup .NET 7
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '7.0.x'
-
-      - name: 🧰 Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: 🧰 Setup .NET 9
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: 📦 Restore
-        run: dotnet restore
-
-      - name: 🛠️ Build
-        run: dotnet build --no-restore --configuration Release
+      - name: 📌 Show MinVer version
+        run: dotnet build --no-restore --configuration Release src/Pelican.Mediator/Pelican.Mediator.csproj | grep "Project version" || true
 
       - name: 📦 Pack
         run: dotnet pack src/Pelican.Mediator/Pelican.Mediator.csproj --no-build --configuration Release --output ./nupkgs
