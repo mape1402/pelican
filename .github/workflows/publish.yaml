@@ -6,46 +6,17 @@ on:
     types: [published]
 
 jobs:
-  detect-sdks:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: ⬇️ Checkout
-        uses: actions/checkout@v3
-
-      - name: 🔍 Parse SDK versions from Directory.Build.props
-        id: set-matrix
-        run: |
-          PROPS="Directory.Build.props"
-          echo "📄 Analyzing $PROPS"
-          TARGETS=$(grep -oPm1 "(?<=<TargetFrameworks>)[^<]+" "$PROPS" || grep -oPm1 "(?<=<TargetFramework>)[^<]+" "$PROPS")
-          echo "Detected TargetFrameworks: $TARGETS"
-
-          VERSIONS=()
-          for FRAMEWORK in $(echo $TARGETS | tr ';' ' '); do
-            VERSION=$(echo $FRAMEWORK | grep -oP '\d+\.\d+')
-            if [ ! -z "$VERSION" ] && [[ ! " ${VERSIONS[*]} " =~ " ${VERSION} " ]]; then
-              VERSIONS+=("$VERSION")
-            fi
-          done
-
-          # Build JSON matrix
-          MATRIX_JSON=$(printf '%s\n' "${VERSIONS[@]}" | jq -R . | jq -s '{dotnet: .}')
-          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
-          echo "🧩 Matrix: $MATRIX_JSON"
-
   install-sdks:
     needs: detect-sdks
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(needs.detect-sdks.outputs.matrix) }}
     steps:
-      - name: 🧰 Install .NET SDK ${{ matrix.dotnet }}
+      - name: 'Install .NET SDK'
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnet }}
-          include-prerelease: true
+          dotnet-version: | 
+            6.0.x
+            8.0.x
+            9.0.x
 
   build-and-test:
     needs: install-sdks
