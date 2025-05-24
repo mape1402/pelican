@@ -37,10 +37,59 @@ public record Ping(string Message) : IRequest<string>;
 
 public class PingHandler : IRequestHandler<Ping, string>
 {
-    public Task<string> Handle(Ping request, CancellationToken cancellationToken)
+    public Task<string> Handle(Ping request, CancellationToken cancellationToken = default)
         => Task.FromResult($"Pong: {request.Message}");
 }
 
+```
+
+```c#
+public record MyNotification(string Message) : INotification;
+
+public class Subscriber1 : INotificationHandler<MyNotification>
+{
+    public Task Handle(MyNotification notification, CancellationToken = default)
+    {
+        Console.WriteLine($"Subscriber1: {notification.Message}");
+        return Task.CompletedTask;
+    }
+}
+
+public class Subscriber2 : INotificationHandler<MyNotification>
+{
+    public Task Handle(MyNotification notification, CancellationToken = default)
+    {
+        Console.WriteLine($"Subscriber2: {notification.Message}");
+        return Task.CompletedTask;
+    }
+}
+```
+
+```c#
+public class Generator
+{
+    private readonly IMediator _mediator;
+    
+    public Generator(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
+    public async Task Invoke()
+    {
+        var ping = new PingRequest("Ping");
+        var response = await _mediator.Send(ping);
+        Console.WriteLine(response); 
+        // Output ->
+        // Pong: Ping
+        
+        var notification = new MyNotification("Hello world!");
+        await _mediator.Publish(notification);
+        // Output ->
+	   // Subscriber1: HelloWorld!
+	   // Subscriber2: HelloWorld!
+    } 
+}
 ```
 
 Add Pelican to the service container.
