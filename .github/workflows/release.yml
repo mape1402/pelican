@@ -1,4 +1,4 @@
-name: Tag & Draft Release
+name: Tag & Release
 
 on:
   push:
@@ -51,6 +51,5 @@ jobs:
           tag_name: ${{ steps.changelog.outputs.tag }}
           name: ${{ steps.changelog.outputs.tag }}
           body_path: release_notes.txt
-          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
