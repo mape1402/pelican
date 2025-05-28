@@ -105,6 +105,8 @@ Create reusable middleware by implementing:
 ```c#
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
 {
+    // Support DependencyInjection
+    
     public async Task<TResponse> Handle(TRequest request, Handler<TResponse> next, CancellationToken ct)
     {
         Console.WriteLine($"Handling {typeof(TRequest).Name}");
@@ -115,7 +117,48 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 }
 ```
 
+Register your pre-processors and post-processors:
+
+```c#
+services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+```
+
+## ⚙️ Pre-Processors and Post-Processors
+
+```c#
+public class LoggingPreProcessor<TRequest> : IPreProcessor<TRequest>
+{
+    // Support DependencyInjection
+    
+    public Task Handle(TRequest request, CancellationToken ct)
+    {
+        Console.WriteLine($"This is a pre-processor!");        
+        return Task.CompletedTask;
+    }
+}
+```
+
+```c#
+public class LoggingPostProcessor<TRequest, TResponse> : IPostProcessor<TRequest, TResponse>
+{
+    // Support DependencyInjection
+    
+    public Task Handle(TRequest request, TResponse CancellationToken ct)
+    {
+        Console.WriteLine($"This is a post-processor!");        
+        return Task.CompletedTask;
+    }
+}
+```
+
+Register your pre-processors and post-processors:
+
+```c#
+services.AddTransient(typeof(IPreProcessor<>), typeof(LoggingPreProcessor<>));
+services.AddTransient(typeof(IPostProcessor<,>), typeof(LoggingPostProcessor<,>));
+```
+
 ## 🛠️ Upcoming Features
 
-- **Support for PreProcessors and PostProcessors**
-   Add hooks to run logic before and after handling a request, useful for validation, logging, transformations, etc.
+- **Extended Base Handlers for Commands and Queries**
+   Add abstract classes with basic CRUD operations with Entity Framework Core.
