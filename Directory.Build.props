@@ -1,16 +1,23 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>false</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>portable</DebugType>
 
-    <Authors>Mario Perez</Authors>
+    <Authors>Elysium Coding</Authors>
     <Company>Elysium Coding</Company>
     <RepositoryUrl>https://github.com/mape1402/pelican</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,6 +25,7 @@
     <PackageIcon>image.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/mape1402/pelican/releases</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,24 +34,20 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <Version>$(MinVerVersion)</Version>
+    <Version Condition="'$(MinVerVersion)' != ''">$(MinVerVersion)</Version>
+    <Version Condition="'$(MinVerVersion)' == ''">1.0.0</Version>
     <MinVerTagPrefix>v</MinVerTagPrefix>
     <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
     <MinVerBuildMetadata>build.{DateTime:yyyyMMddHHmmss}</MinVerBuildMetadata>
     <MinVerIsRelease>false</MinVerIsRelease>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
-    <PackageVersion Include="MinVer" Version="6.0.0" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="NSubstitute" Version="5.3.0" />
-    <PackageReference Include="xunit" Version="2.5.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
 </Project>
